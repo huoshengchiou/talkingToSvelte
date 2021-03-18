@@ -1,6 +1,9 @@
 <script>
   import Login from "./components/Login.svelte";
   import Brick from "./components/Brick.svelte";
+  import SlotDemo from './components/SlotDemo.svelte'
+  import PopUp from './components/PopUp.svelte';
+  import FromPractice from './components/FromPractice.svelte'
   let name = "sheng"; //沒有export的狀況下不會綁props
   let color = "black";
   const handleClick = () => {
@@ -43,12 +46,34 @@
   const toggleFn = () => {
     move = !move;
   };
+
+
+
+  let showPop=false
+
+
+  const handleShowPop=()=>{
+    showPop=!showPop
+  }
+
+//客製化的event dispatch後會在event obj綁detail key
+  const parentAddFn=(e)=>{
+   people=[e.detail,...people]
+  }
 </script>
 
 <Brick {move} on:click={toggleFn} />
 <Login {...obj} />
 <!-- short hand -->
 <!-- <Login {passColor} /> -->
+
+<!-- slot 在一個component傳入HTML結構-->
+<SlotDemo>
+<div>from Slot</div>
+<p slot='named'>name slot</p>
+</SlotDemo>
+
+
 
 <!--  component 沒有export-->
 <!-- 後續的component都會是這隻的child -->
@@ -68,7 +93,8 @@
     Visit the <a href="https://svelte.dev/tutorial">Hello kotake</a> to learn how
     to build Svelte apps.
   </p>
-  <button on:click={handleClick}>update</button>
+  <!-- <button on:click={handleClick}>update</button> -->
+  <button on:click|once={handleClick}>update</button>
   <!-- 只需要單向綁定 -->
   <input type="text" on:input={handleInput} />
   <!-- 雙向綁定值 -->
@@ -90,6 +116,12 @@
   {:else}
     <p>no people to show</p>
   {/each}
+  {#if showPop}
+  <PopUp on:click={handleShowPop}>  
+    <FromPractice on:addPerson={parentAddFn}/>
+  </PopUp>
+  {/if}
+  <button on:click={handleShowPop}>show pop</button>
 </main>
 
 <!-- 所有的style不會汙染到其他地方 bundle時會產生uni class name-->
@@ -99,6 +131,7 @@
     padding: 1em;
     max-width: 240px;
     margin: 0 auto;
+    position: relative;
   }
 
   h1 {
